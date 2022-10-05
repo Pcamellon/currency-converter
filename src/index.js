@@ -5,11 +5,11 @@
 const fromCurrencyElem = document.querySelector("#from");
 const toCurrencyElem = document.querySelector("#to");
 const fromQtyElem = document.querySelector("#from-qty");
-// const toQtyElem = document.querySelector("#to-qty");
+const toQtyElem = document.querySelector("#to-qty");
 
-//
+// API
 // const API_KEY = `6OAfpJGCnjvjgHXXFAb5yUko7L2YweJt`;
-// const API = `https://api.exchangerate.host/convert`;
+const API = `https://api.exchangerate.host/convert`;
 
 // const FIXER_API = `http://data.fixer.io/api/latest?access_key=${FIXER_API_KEY}`;
 
@@ -47,15 +47,15 @@ const convertCurrency = (e) => {
   // TODO
   // Check what changed :  e.target.id  == from-qty {} ...
 
+  // How much we want to change
   const fromQty = e.target.value;
 
   console.log(`fromQty: ${fromQty}`);
 
-  // let exchangeRate = -1;
-  // // let countries = [];
+  let exchangeRate = -1;
 
-  // const fromCurrency = fromCurrencyElem.value;
-  // const toCurrency = toCurrencyElem.value;
+  const fromCurrency = fromCurrencyElem.value;
+  const toCurrency = toCurrencyElem.value;
 
   // let fromQty = parseFloat(fromQtyElem.value);
   // let toQty = parseFloat(toQtyElem.value);
@@ -63,11 +63,27 @@ const convertCurrency = (e) => {
   // let headers = new Headers();
   // headers.append("apikey", API_KEY);
 
-  // let requestOptions = {
-  //   method: "GET",
-  //   // redirect: "follow"
-  //   // headers: headers
-  // };
+  // Fetch API request options
+  let requestOptions = {
+    method: "GET"
+    // redirect: "follow"
+    // headers: headers
+  };
+
+  fetch(`${API}?from=${fromCurrency}&to=${toCurrency}`, requestOptions)
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      return response.json();
+      // toQtyElem.value = response;
+    })
+    .then(({ info }) => {
+      // Get rate from response data
+      exchangeRate = info["rate"];
+      toQtyElem.value = fromQty * exchangeRate;
+    });
 
   // const response = await fetch(
   //   `${API}?from=${fromCurrency}&to=${toCurrency}`,
